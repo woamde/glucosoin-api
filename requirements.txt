@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+python-dotenv
+pymongo
+dnspython
+google-genai
+anthropic
+openai
