@@ -123,6 +123,28 @@ class JournalEntryModel(BaseModel):
 async def root():
     return {"status": "ok", "message": "API GlycoSoin opérationnelle"}
 
+# Endpoint de diagnostic MongoDB
+@app.get("/api/debug/mongo")
+async def debug_mongo():
+    if db is None:
+        return {"status": "error", "message": "MongoDB non connecté (mode mémoire actif)"}
+    try:
+        db_list = mongo_client.list_database_names()
+        collections = db.list_collection_names()
+        
+        count = db["glucose_readings"].count_documents({})
+        sample = db["glucose_readings"].find_one()
+        
+        return {
+            "connected_database": db.name,
+            "all_databases": db_list,
+            "collections_in_db": collections,
+            "glucose_readings_count": count,
+            "sample_document": format_mongo_doc(sample) if sample else None
+        }
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
 # 1. Endpoints Profil
 @app.get("/api/profile")
 @app.get("/profile")
