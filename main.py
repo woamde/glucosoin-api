@@ -45,11 +45,13 @@ db = None
 if HAS_PYMONGO and DATABASE_URL:
     try:
         mongo_client = MongoClient(DATABASE_URL, serverSelectionTimeoutMS=5000)
-        try:
-            db = mongo_client.get_default_database()
-        except Exception:
-            db = mongo_client["glycosoin_db"]
+        # On force explicitement le nom de la base de données Atlas
+        db = mongo_client["glycosoin"]
         logger.info(f"Connexion MongoDB Atlas établie sur la base : {db.name}")
+    except Exception as err:
+        logger.error(f"Échec de connexion MongoDB : {err}")
+else:
+    logger.warning("PyMongo non disponible ou DATABASE_URL manquante. Mode mémoire actif.")
     except Exception as err:
         logger.error(f"Échec de connexion MongoDB : {err}")
 else:
